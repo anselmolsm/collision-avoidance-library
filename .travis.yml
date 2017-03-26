@@ -1,0 +1,9 @@
+services: docker
+
+before_install:
+ - CONTAINER=$(docker run -v $PWD:/build -it -d ubuntu:16.10 /bin/bash)
+ - docker exec -i $CONTAINER /bin/bash -c "apt-get update -qq && apt-get install -y -qq libusb-1.0 libglm-dev cmake build-essential python-future wget pkg-config"
+ - docker exec -i $CONTAINER /bin/bash -c "wget https://github.com/IntelRealSense/librealsense/archive/v1.12.1.tar.gz && tar xf v1.12.1.tar.gz && cd librealsense-1.12.1 && cmake -DBUILD_UNIT_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr . && make -j install"
+
+script:  
+ - docker exec -i $CONTAINER /bin/bash -c "cd /build && mkdir build && cd build && cmake .. && make -j"
